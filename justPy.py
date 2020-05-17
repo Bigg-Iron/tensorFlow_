@@ -110,10 +110,35 @@ def my_input_fn(features, targets, batch_size=1, shuffle=True, num_epochs=None):
 
 
 ''' Step 5: Train the Model
-
 We can now call train() on our linear_regressor to train the model. We'll wrap my_input_fn in a lambda so we can pass in my_feature and targets as arguments (see this TensorFlow input function tutorial for more details), and to start, we'll train for 100 steps. '''
+
+''' TODO: Remove deprecated methods: 
+Variable.initialized_value (from tensorflow.python.ops.variables) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use Variable.read_value. Variables in 2.X are initialized automatically both in eager and graph (inside tf.defun) contexts. 
+
+TODO: DatasetV1.make_one_shot_iterator (from tensorflow.python.data.ops.dataset_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use `for ... in dataset:` to iterate over a dataset. If using `tf.estimator`, return the `Dataset` object directly from your input function. As a last resort, you can use `tf.compat.v1.data.make_one_shot_iterator(dataset)`.
+
+TODO: Layer.add_variable (from tensorflow.python.keras.engine.base_layer) is deprecated and will be removed in a future version.
+Instructions for updating:
+Please use `layer.add_weight` method instead.
+
+TODO: calling BaseResourceVariable.__init__ (from tensorflow.python.ops.resource_variable_ops) with constraint is deprecated and will be removed in a future version.
+Instructions for updating:
+If using Keras pass *_constraint arguments to layers.
+
+TODO: to_float (from tensorflow.python.ops.math_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use `tf.cast` instead.
+
+TODO: where (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.
+Instructions for updating:
+Use tf.where in 2.0, which has the same broadcast rule as np.where'''
 
 _ = linear_regressor.train(
     input_fn = lambda:my_input_fn(my_feature, targets),
     steps=100
 )
+
