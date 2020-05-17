@@ -63,7 +63,7 @@ Next, we'll configure a linear regression model using LinearRegressor. We'll tra
 NOTE: To be safe, we also apply gradient clipping to our optimizer via clip_gradients_by_norm. Gradient clipping ensures the magnitude of the gradients do not become too large during training, which can cause gradient descent to fail. '''
 
 # Use gradient descent as the optimizer for training the model.
-my_optimizer=tf.train.GradientDescentOptimizer(learning_rate=0.0000001)
+my_optimizer= tf.compat.v1.train.GradientDescentOptimizer(learning_rate=0.0000001)
 my_optimizer = tf.contrib.estimator.clip_gradients_by_norm(my_optimizer, 5.0)
 
 # Configure the linear regression model with our feature columns and optimizer.
@@ -72,4 +72,39 @@ linear_regressor = tf.estimator.LinearRegressor(
     feature_columns=feature_columns,
     optimizer=my_optimizer
 )
+
+
+''' Step 4: Define the Input Function
+To import our California housing data into our LinearRegressor, we need to define an input function, which instructs TensorFlow how to preprocess the data, as well as how to batch, shuffle, and repeat it during model training.
+First, we'll convert our pandas feature data into a dict of NumPy arrays. We can then use the TensorFlow Dataset API to construct a dataset object from our data, and then break our data into batches of batch_size, to be repeated for the specified number of epochs (num_epochs).
+NOTE: When the default value of num_epochs=None is passed to repeat(), the input data will be repeated indefinitely.
+Next, if shuffle is set to True, we'll shuffle the data so that it's passed to the model randomly during training. The buffer_size argument specifies the size of the dataset from which shuffle will randomly sample.
+Finally, our input function constructs an iterator for the dataset and returns the next batch of data to the LinearRegressor. '''
+
+def my_input_fn(features, targets, batch_size=1, shuffle=True, num_epochs=None):
+
+    """ Trains a linear regression model of one feature.
+    Args:
+        features: pandas DataFrame of features
+        targets: pandas DataFrame of targets
+        batch_size: Size of batches to be passed to the model
+        shuffle: True or False. Whether to shuffle the data.
+        num_epochs: Number of epochs for which data should be repeated. None = repeat indefinitely
+    Returns:
+        Tuple of (features, labels) for next data batch
+    """
+    # Convert pandas data into a dict of np arrays.
+    features = {key:np.array(value) for key,value in dict(features).items()}
+
+    # Construct a dataset, and configure batching/repeating.
+    ds = Dataset.from_tensor_slices((features,targets)) # warning: 2GB limit
+    ds = ds.batch(batch_size).repeat(num_epochs)
+
+    # Shuffle the data, if specified.
+    if shuffle:
+        ds = ds.shuffle(buffer_size=10000)
+
+    # Return the next batch of data.
+    features, labels = ds.make_one_shot_iterator().get_next()
+    return features, labels
 
