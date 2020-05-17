@@ -108,3 +108,12 @@ def my_input_fn(features, targets, batch_size=1, shuffle=True, num_epochs=None):
     features, labels = ds.make_one_shot_iterator().get_next()
     return features, labels
 
+
+''' Step 5: Train the Model
+
+We can now call train() on our linear_regressor to train the model. We'll wrap my_input_fn in a lambda so we can pass in my_feature and targets as arguments (see this TensorFlow input function tutorial for more details), and to start, we'll train for 100 steps. '''
+
+_ = linear_regressor.train(
+    input_fn = lambda:my_input_fn(my_feature, targets),
+    steps=100
+)
