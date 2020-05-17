@@ -22,3 +22,4 @@ tf.compat.v1.logging.set_verbosity
 
 pd.options.display.max_rows = 10
 pd.options.display.float_format = '{:.1f}'.format
+print (tf.python.data)
